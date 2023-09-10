@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\andre\\Desktop\\Sintaxis_2\\Sintaxis_2.csproj": {}
+    "C:\\Users\\andre\\Documents\\GitHub\\Sintaxis_2\\Sintaxis_2.csproj": {}
   },
   "projects": {
-    "C:\\Users\\andre\\Desktop\\Sintaxis_2\\Sintaxis_2.csproj": {
+    "C:\\Users\\andre\\Documents\\GitHub\\Sintaxis_2\\Sintaxis_2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\andre\\Desktop\\Sintaxis_2\\Sintaxis_2.csproj",
+        "projectUniqueName": "C:\\Users\\andre\\Documents\\GitHub\\Sintaxis_2\\Sintaxis_2.csproj",
         "projectName": "Sintaxis_2",
-        "projectPath": "C:\\Users\\andre\\Desktop\\Sintaxis_2\\Sintaxis_2.csproj",
+        "projectPath": "C:\\Users\\andre\\Documents\\GitHub\\Sintaxis_2\\Sintaxis_2.csproj",
         "packagesPath": "C:\\Users\\andre\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\andre\\Desktop\\Sintaxis_2\\obj\\",
+        "outputPath": "C:\\Users\\andre\\Documents\\GitHub\\Sintaxis_2\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\andre\\AppData\\Roaming\\NuGet\\NuGet.Config"
