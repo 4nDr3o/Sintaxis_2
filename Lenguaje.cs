@@ -205,13 +205,13 @@ namespace Sintaxis_2
         //Asignacion -> identificador = Expresion;
         private void Asignacion(bool ejecuta)
         {
+            float resultado = 1;
             if (!Existe(getContenido()))
             {
                 throw new Error("de sintaxis, la variable <" + getContenido() + "> no está declarada", log, linea, columna);
             }
             log.Write(getContenido() + " = ");
             string variable = getContenido();
-            float resultado = 0;
             match(Tipos.Identificador);
             if (getContenido() == "=")
             {
@@ -387,24 +387,36 @@ namespace Sintaxis_2
             if (getContenido() == "else")
             {
                 match("else");
-                bool noEjecuta = !ejecuta;
-                if (getContenido() == "{")
+                if (evaluacion == false)
                 {
-
-                    BloqueInstrucciones(noEjecuta);
+                    if (getContenido() == "{")
+                    {
+                        BloqueInstrucciones(true);
+                    }
+                    else
+                    {
+                        Instruccion(true);
+                    }
                 }
                 else
                 {
-                    Instruccion(noEjecuta);
+                    if (getContenido() == "{")
+                    {
+                        BloqueInstrucciones(false);
+                    }
+                    else
+                    {
+                        Instruccion(false);
+                    }
                 }
             }
 
         }
         private void Printf(bool ejecuta)
         {
+
             match("printf");
             match("(");
-
             string cadenaSinComillas = getContenido().Trim('"');
             if (cadenaSinComillas.Contains("\\n"))
             {
@@ -412,23 +424,32 @@ namespace Sintaxis_2
                 if (cadenaConSalto.Contains("\\t"))
                 {
                     string cadenaConEspacio = cadenaConSalto.Replace("\\t", "\t");
-                    Console.Write(cadenaConEspacio);
+                    if (ejecuta)
+                    {
+                        Console.Write(cadenaConEspacio);
+                    }
                 }
                 else
                 {
-                    Console.Write(cadenaConSalto);
+                    if (ejecuta)
+                    {
+                        Console.Write(cadenaConSalto);
+                    }
                 }
             }
             else if (cadenaSinComillas.Contains("\\t"))
             {
                 string cadenaConEspacio = cadenaSinComillas.Replace("\\t", "\t");
-                Console.Write(cadenaConEspacio);
+                if (ejecuta)
+                {
+                    Console.Write(cadenaConEspacio);
+                }
             }
             else
             {
-                Console.Write(cadenaSinComillas);
+                if (ejecuta)
+                    Console.Write(cadenaSinComillas);
             }
-
             match(Tipos.Cadena);
             if (getContenido() == ",")
             {
@@ -439,10 +460,13 @@ namespace Sintaxis_2
                 }
                 float resultado = getValor(getContenido());
                 match(Tipos.Identificador);
-                Console.WriteLine(resultado);
+                if (ejecuta)
+                    Console.WriteLine(resultado);
             }
+
             match(")");
             match(";");
+
         }
         //Scanf -> scanf(cadena,&Identificador);
         private void Scanf(bool ejecuta)
@@ -465,7 +489,6 @@ namespace Sintaxis_2
                 {
                     throw new Error("de captura, la captura <" + captura + "> no debe contener letras", log, linea, columna);
                 }
-                //stack.Pop();
                 float resultado = float.Parse(captura);
                 Modifica(variable, resultado);
 
@@ -532,8 +555,7 @@ namespace Sintaxis_2
         }
         //Factor -> numero | identificador | (Expresion)
         private void Factor()
-        {
-            //float resultado;
+        { 
             if (getClasificacion() == Tipos.Numero)
             {
                 log.Write(" " + getContenido());

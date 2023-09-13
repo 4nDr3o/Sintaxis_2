@@ -1,4 +1,3 @@
-// PRUEBA DE FUEGO
 #include<stdio.h>
 #include<math.h>
 #include<iostream>
@@ -16,14 +15,16 @@ void main() // Funcion principal
 
         printf("\nc es par\t\tITQ");
         if (c==10)
-            printf("Se ejecutó el segundo If ",c);
-            a = 70;
+            printf("Se ejecutÃƒÂ³ el segundo If ");
+        else
+            printf("else");
+        a = 70;
     }
     else
     {
         printf("\nc es impar\tITQ\n");
         if(c==11)
-            printf("Se ejecutó el segundo if del Else");
+            printf("Se ejecutÃƒÂ³ el segundo if del Else");
     }
     b++;
     c--;
