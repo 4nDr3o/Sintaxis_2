@@ -1,18 +1,14 @@
 Autor: Guillermo Fernandez Romero
 Fecha: 3-Mayo-2023 15:09
-a =  3 5 + 8 * 10 4 - 2 / - = 61
-b =  19 = 19
- 2 % 0 10a =  70 = 70
- 11b =  = 20
-c =  = 9
-d =  3 = 3
-c =  15 - = 4
-b =  9 = 11
------------------
+c =  20 = 20
+a =  = 0
+ 1 1i =  0 = 0
+For: i
+ 5 5 5 5 5 5-----------------
 V a r i a b l e s
 -----------------
-a Float = 70
-b Float = 11
-c Float = 4
-d Float = 3
+a Char = 0
+b Int = 0
+i Int = 5
+c Float = 20
 -----------------

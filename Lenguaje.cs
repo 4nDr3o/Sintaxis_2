@@ -16,21 +16,31 @@ using System.Threading.Tasks;
     Requerimiento 4: Implemenar la ejecución del ELSE
 */
 
+/*
+    Requerimiento 1: Implementar la ejecucion del while
+    Requerimiento 2: Implemenatr la ejecicion del do - whike
+    Requerimiento 3: Implementar la ejecucion del for
+    Requerimiento 4: Marcar errores semánticos
+    Requerimiento 5: CAST
+*/
 namespace Sintaxis_2
 {
     public class Lenguaje : Sintaxis
     {
         List<Variable> lista;
         Stack<float> stack;
+        Variable.TiposDatos tipoDatoExpresion;
         public Lenguaje()
         {
             lista = new List<Variable>();
             stack = new Stack<float>();
+            tipoDatoExpresion = Variable.TiposDatos.Char;
         }
         public Lenguaje(string nombre) : base(nombre)
         {
             lista = new List<Variable>();
             stack = new Stack<float>();
+
         }
 
         //Programa  -> Librerias? Variables? Main
@@ -55,7 +65,7 @@ namespace Sintaxis_2
             log.WriteLine("-----------------");
             foreach (Variable v in lista)
             {
-                log.WriteLine(v.getNombre() + " " + v.getTiposDatos() + " = " + v.getValor());
+                log.WriteLine(v.getNombre() + " " + v.getTiposDato() + " = " + v.getValor());
             }
             log.WriteLine("-----------------");
         }
@@ -150,6 +160,33 @@ namespace Sintaxis_2
                 ListaIdentificadores(tipo);
             }
         }
+        private Variable.TiposDatos getTipo(string nombre)
+        {
+            foreach (Variable v in lista)
+            {
+                if (v.getNombre() == nombre)
+                {
+                    return v.getTiposDato();
+                }
+            }
+            return Variable.TiposDatos.Char;
+        }
+        private Variable.TiposDatos getTipo(float resultado)
+        {
+            if (resultado % 1 != 0)
+            {
+                return Variable.TiposDatos.Float;
+            }
+            else if (resultado < 256)
+            {
+                return Variable.TiposDatos.Char;
+            }
+            else if (resultado < 65536)
+            {
+                return Variable.TiposDatos.Int;
+            }
+            return Variable.TiposDatos.Float;
+        }
         //BloqueInstrucciones -> { ListaInstrucciones ? }
         private void BloqueInstrucciones(bool ejecuta)
         {
@@ -205,7 +242,8 @@ namespace Sintaxis_2
         //Asignacion -> identificador = Expresion;
         private void Asignacion(bool ejecuta)
         {
-            float resultado = 1;
+            float resultado = 0;
+            tipoDatoExpresion = Variable.TiposDatos.Char;
             if (!Existe(getContenido()))
             {
                 throw new Error("de sintaxis, la variable <" + getContenido() + "> no está declarada", log, linea, columna);
@@ -273,10 +311,24 @@ namespace Sintaxis_2
             log.WriteLine(" = " + resultado);
             if (ejecuta)
             {
-                Modifica(variable, resultado);
+                Variable.TiposDatos tipoDatoVariable = getTipo(variable);
+                Variable.TiposDatos tipoDatoResultado = getTipo(resultado);
+                Console.WriteLine(variable + " = " + tipoDatoVariable);
+                Console.WriteLine(resultado + " = " + tipoDatoResultado);
+                Console.WriteLine("expresion = " + tipoDatoExpresion);
+
+                if (tipoDatoVariable >= tipoDatoResultado)
+                {
+                    if(tipoDatoExpresion>tipoDatoVariable)
+                        throw new Error("de semantica, no se puede asignar un <" + tipoDatoExpresion + "> a un <" + tipoDatoVariable + ">", log, linea, columna);
+                    Modifica(variable, resultado);
+                }
+                else
+                {
+                    throw new Error("de semantica, no se puede asignar in <" + tipoDatoResultado + "> a un <" + tipoDatoVariable + ">", log, linea, columna);
+                }
             }
             match(";");
-
         }
         //While -> while(Condicion) BloqueInstrucciones | Instruccion
         private void While(bool ejecuta)
@@ -313,26 +365,47 @@ namespace Sintaxis_2
             match(";");
         }
         //For -> for(Asignacion Condicion; Incremento) BloqueInstrucciones | Instruccion
-        private void For(bool ejecuta)
+       private void For(bool ejecuta)
         {
             match("for");
             match("(");
             Asignacion(ejecuta);
-            Condicion();
-            match(";");
-            Incremento(ejecuta);
-            match(")");
-            if (getContenido() == "{")
+
+            int inicia = caracter;
+            int lineaInicio = linea;
+            float resultado = 0;
+            string variable = getContenido();
+            log.WriteLine("For: " + variable);
+            //Asignacion(ejecuta);
+            do
             {
-                BloqueInstrucciones(ejecuta);
+                Console.WriteLine("Resultado: " + resultado);
+                ejecuta = Condicion() && ejecuta;
+                match(";");
+                resultado = Incremento(ejecuta, resultado);
+                match(")");
+                if (getContenido() == "{")
+                {
+                    BloqueInstrucciones(ejecuta);
+                }
+                else
+                {
+                    Instruccion(ejecuta);
+                }
+                if (ejecuta)
+                {
+                    Modifica(variable, resultado);
+                    archivo.DiscardBufferedData();
+                    caracter = inicia - variable.Length -1;
+                    archivo.BaseStream.Seek(caracter, SeekOrigin.Begin);
+                    nextToken();
+                    linea = lineaInicio;
+                }
             }
-            else
-            {
-                Instruccion(ejecuta);
-            }
+            while (ejecuta);
         }
         //Incremento -> Identificador ++ | --
-        private void Incremento(bool ejecuta)
+        private float Incremento(bool ejecuta, float resultado)
         {
             if (!Existe(getContenido()))
             {
@@ -342,11 +415,20 @@ namespace Sintaxis_2
             if (getContenido() == "++")
             {
                 match("++");
+                if(ejecuta)
+                {
+                    resultado++;
+                }
             }
             else
             {
                 match("--");
+                if(ejecuta)
+                {
+                    resultado--;
+                }
             }
+            return resultado;
         }
         //Condicion -> Expresion OperadorRelacional Expresion
         private bool Condicion()
@@ -357,7 +439,6 @@ namespace Sintaxis_2
             Expresion();
             float R1 = stack.Pop();
             float R2 = stack.Pop();
-
             switch (operador)
             {
                 case "==": return R2 == R1;
@@ -373,83 +454,43 @@ namespace Sintaxis_2
         {
             match("if");
             match("(");
-            bool evaluacion = Condicion() && ejecuta;
-            Console.WriteLine(evaluacion);
+            bool evaluacion = Condicion();
             match(")");
             if (getContenido() == "{")
             {
-                BloqueInstrucciones(evaluacion);
+                BloqueInstrucciones(evaluacion && ejecuta);
             }
             else
             {
-                Instruccion(evaluacion);
+                Instruccion(evaluacion && ejecuta);
             }
             if (getContenido() == "else")
             {
                 match("else");
-                if (evaluacion == false)
+                if (getContenido() == "{")
                 {
-                    if (getContenido() == "{")
-                    {
-                        BloqueInstrucciones(true);
-                    }
-                    else
-                    {
-                        Instruccion(true);
-                    }
+                    BloqueInstrucciones(!evaluacion && ejecuta);
                 }
                 else
                 {
-                    if (getContenido() == "{")
-                    {
-                        BloqueInstrucciones(false);
-                    }
-                    else
-                    {
-                        Instruccion(false);
-                    }
+                    Instruccion(!evaluacion && ejecuta);
                 }
             }
-
         }
         private void Printf(bool ejecuta)
         {
 
             match("printf");
             match("(");
-            string cadenaSinComillas = getContenido().Trim('"');
-            if (cadenaSinComillas.Contains("\\n"))
+            
+            if (ejecuta)
             {
-                string cadenaConSalto = cadenaSinComillas.Replace("\\n", Environment.NewLine);
-                if (cadenaConSalto.Contains("\\t"))
-                {
-                    string cadenaConEspacio = cadenaConSalto.Replace("\\t", "\t");
-                    if (ejecuta)
-                    {
-                        Console.Write(cadenaConEspacio);
-                    }
-                }
-                else
-                {
-                    if (ejecuta)
-                    {
-                        Console.Write(cadenaConSalto);
-                    }
-                }
+                string cadena = getContenido().TrimStart('"');
+                cadena = cadena.Remove(cadena.Length - 1);
+                cadena = cadena.Replace(@"\n", "\n");
+                Console.Write(cadena);
             }
-            else if (cadenaSinComillas.Contains("\\t"))
-            {
-                string cadenaConEspacio = cadenaSinComillas.Replace("\\t", "\t");
-                if (ejecuta)
-                {
-                    Console.Write(cadenaConEspacio);
-                }
-            }
-            else
-            {
-                if (ejecuta)
-                    Console.Write(cadenaSinComillas);
-            }
+            
             match(Tipos.Cadena);
             if (getContenido() == ",")
             {
@@ -461,7 +502,7 @@ namespace Sintaxis_2
                 float resultado = getValor(getContenido());
                 match(Tipos.Identificador);
                 if (ejecuta)
-                    Console.WriteLine(resultado);
+                    Console.Write(resultado);
             }
 
             match(")");
@@ -491,7 +532,6 @@ namespace Sintaxis_2
                 }
                 float resultado = float.Parse(captura);
                 Modifica(variable, resultado);
-
             }
             match(")");
             match(";");
@@ -555,12 +595,15 @@ namespace Sintaxis_2
         }
         //Factor -> numero | identificador | (Expresion)
         private void Factor()
-        { 
+        {
             if (getClasificacion() == Tipos.Numero)
             {
                 log.Write(" " + getContenido());
-
                 stack.Push(float.Parse(getContenido()));
+                if (tipoDatoExpresion < getTipo(float.Parse(getContenido())))
+                {
+                    tipoDatoExpresion = getTipo(float.Parse(getContenido()));
+                }
                 match(Tipos.Numero);
             }
             else if (getClasificacion() == Tipos.Identificador)
@@ -569,18 +612,57 @@ namespace Sintaxis_2
                 {
                     throw new Error("de sintaxis, la variable <" + getContenido() + "> no está declarada", log, linea, columna);
                 }
-                string variable = getContenido();
-                float valor = getValor(getContenido());
+                stack.Push(getValor(getContenido()));
+                if (tipoDatoExpresion < getTipo(getContenido()))
+                {
+                    tipoDatoExpresion = getTipo(getContenido());
+                }
                 match(Tipos.Identificador);
-                Modifica(variable, valor);
-                stack.Push(valor);
             }
             else
             {
+                bool huboCast = false;
+                Variable.TiposDatos tipoDatoCast = Variable.TiposDatos.Char;
                 match("(");
+                if (getClasificacion() == Tipos.TipoDato)
+                {
+                    huboCast = true;
+                    switch (getContenido())
+                    {
+                        case "int":
+                            tipoDatoCast = Variable.TiposDatos.Int;
+                            break;
+                        case "float":
+                            tipoDatoCast = Variable.TiposDatos.Float;
+                            break;
+                    }
+                    match(Tipos.TipoDato);
+                    match(")");
+                    match("(");
+                }
                 Expresion();
                 match(")");
+                if (huboCast)
+                {
+                    tipoDatoExpresion = tipoDatoCast;
+                    stack.Push(castea(stack.Pop(), tipoDatoCast));
+                }
             }
+        }
+        float castea(float resultado, Variable.TiposDatos tipoDato)
+        {
+            if (tipoDato == Variable.TiposDatos.Char)
+            {
+                resultado=MathF.Round(resultado);
+                resultado %= 256;
+            }
+            else if (tipoDato == Variable.TiposDatos.Int)
+            {
+                resultado=MathF.Round(resultado);
+                resultado %= 62256;
+            }
+            //stack.Push(resultado);
+            return resultado;
         }
     }
 }

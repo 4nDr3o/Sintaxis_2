@@ -18,11 +18,12 @@ namespace Sintaxis_2
             this.tipo = tipo;
             this.valor = 0;
         }
+        
         public string getNombre()
         {
             return nombre;
         }
-        public TiposDatos getTiposDatos()
+        public TiposDatos getTiposDato()
         {
             return this.tipo;
         }
