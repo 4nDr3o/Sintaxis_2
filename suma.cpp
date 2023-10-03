@@ -1,27 +1,24 @@
-#include<stdio.h>
-#include<math.h>
-#include<iostream>
+#include <stdio.h>
+#include <math.h>
+#include <iostream>
 
-char  a;
-int   b,i;
-float c;
+char altura,i,j;
 
 void main() // Funcion principal
 {
-    c = 20;
-    printf("C = ",c);
-    a = (char)(b);
+    printf("\nAltura: ");
+    scanf("&i",&altura);
 
-    if (1 == 1)
+    for (i = 1; i <= altura; i++)
     {
-        for(i=0; i<5; i++)
+        for (j = 1; j <= i; j++)
         {
-            printf("Hola\n");
+            if (j%2==0)
+                printf("-");
+            else
+                printf("+");
         }
-    }
-    else
-    {
-        printf("mundo\n");
+        printf("\n");
     }
 }
 

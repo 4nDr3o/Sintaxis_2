@@ -1,14 +1,23 @@
 Autor: Guillermo Fernandez Romero
 Fecha: 3-Mayo-2023 15:09
-c =  20 = 20
-a =  = 0
- 1 1i =  0 = 0
+i =  1 = 1
 For: i
- 5 5 5 5 5 5-----------------
+j =  1 = 1
+For: j
+ 2 % 0 2 % 0j =  1 = 1
+For: j
+ 2 % 0 2 % 0 2 % 0j =  1 = 1
+For: j
+ 2 % 0 2 % 0 2 % 0 2 % 0j =  1 = 1
+For: j
+ 2 % 0 2 % 0 2 % 0 2 % 0 2 % 0j =  1 = 1
+For: j
+ 2 % 0 2 % 0 2 % 0 2 % 0 2 % 0 2 % 0j =  1 = 1
+For: j
+ 2 % 0-----------------
 V a r i a b l e s
 -----------------
-a Char = 0
-b Int = 0
-i Int = 5
-c Float = 20
+altura Char = 5
+i Char = 6
+j Char = 6
 -----------------
