@@ -1,17 +1,17 @@
 Autor: Guillermo Fernandez Romero
 Fecha: 3-Mayo-2023 15:09
+j =  720 = 720
 i =  1 = 1
-For: i
+for: i
 j =  250 = 250
-For: j
+for: j
  250 + 2 % 0 250 + 2 % 0j =  250 = 250
-For: j
  250 + 2 % 0 250 + 2 % 0 250 + 2 % 0j =  250 = 250
-For: j
  250 + 2 % 0 250 + 2 % 0 250 + 2 % 0 250 + 2 % 0j =  250 = 250
-For: j
  250 + 2 % 0i =  1 = 1
+while: while
 j =  250 = 250
+while: while
  250 + 2 % 0j =  = 251
  250 + 2 % 0j =  = 252
 i =  = 2
@@ -30,7 +30,9 @@ j =  250 = 250
  250 + 2 % 0j =  = 254
 i =  = 5
 i =  1 = 1
+do: do
 j =  250 = 250
+do: do
  2 % 0j =  = 251
  250 +i =  = 2
 j =  250 = 250
@@ -45,7 +47,9 @@ j =  250 = 250
 -----------------
 V a r i a b l e s
 -----------------
-altura Char = 3
-i Char = 4
-j Char = 253
+altura Int = 3
+i Int = 4
+j Int = 253
+k Int = 0
+c Char = 0
 -----------------

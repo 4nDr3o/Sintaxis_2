@@ -58,16 +58,23 @@ namespace Sintaxis_2
         protected StreamReader archivo;
         protected StreamWriter log;
 
+        protected StreamWriter asm;
         protected int linea;
         protected int columna;
         protected int caracter;
         public Lexico()
         {
-            linea = columna =caracter= 1;
+            linea = columna = caracter = 1;
             log = new StreamWriter("prueba.log");
+            asm = new StreamWriter("prueba.asm");
+            log.AutoFlush = true;
+            asm.AutoFlush = true;
             log.WriteLine("Autor: Guillermo Fernandez Romero");
             log.WriteLine("Fecha: 3-Mayo-2023 15:09");
-            log.AutoFlush = true;
+            asm.WriteLine("; Autor: Guillermo Fernandez Romero");
+            asm.WriteLine("; Fecha: 3-Mayo-2023");
+            
+
             if (File.Exists("prueba.cpp"))
             {
                 archivo = new StreamReader("prueba.cpp");
@@ -81,9 +88,13 @@ namespace Sintaxis_2
         {
             linea = columna = caracter=1;
             log = new StreamWriter(Path.GetFileNameWithoutExtension(nombre) + ".log");
+            asm = new StreamWriter(Path.GetFileNameWithoutExtension(nombre) + ".asm");
             log.WriteLine("Autor: Guillermo Fernandez Romero");
             log.WriteLine("Fecha: 3-Mayo-2023 15:09");
+            asm.WriteLine("; Autor: Guillermo Fernandez Romero");
+            asm.WriteLine("; Fecha: 3-Mayo-2023");
             log.AutoFlush = true;
+            asm.AutoFlush = true;
             if (Path.GetExtension(nombre) != ".cpp")
             {
                 throw new Error("El archivo " + nombre + " no tiene extension CPP", log, linea, columna);
@@ -102,6 +113,7 @@ namespace Sintaxis_2
         {
             archivo.Close();
             log.Close();
+            asm.Close();
         }
         private int Columna(char t)
         {
